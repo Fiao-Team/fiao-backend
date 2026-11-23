@@ -6,9 +6,9 @@ from sqlalchemy import text
 from sqlalchemy import JSON, BigInteger, CHAR, ForeignKey, SmallInteger, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db import Base
-from app.dominio.enums import Moneda, Rol
-from app.modelos.tipos import ACTIVO, enum_pg
+from app.config.db import Base
+from app.entidades.enums import Moneda, Rol
+from app.entidades.tipos import ACTIVO, enum_pg
 
 
 class Usuario(Base):

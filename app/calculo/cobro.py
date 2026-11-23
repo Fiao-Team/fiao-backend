@@ -8,7 +8,7 @@ from decimal import Decimal
 from app.calculo.fechas import dias_entre
 from app.calculo.redondeo import red_monto
 from app.calculo.tasas import tep
-from app.dominio.enums import EstadoListado
+from app.entidades.enums import EstadoListado
 
 CERO = Decimal("0.00")
 

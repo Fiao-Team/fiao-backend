@@ -7,12 +7,13 @@ import pytest
 from fastapi import Depends
 from sqlalchemy import select
 
-from app.comun.seguridad import hash_password
-from app.comun.sesion import Sesion, requiere_rol
-from app.dominio.enums import Rol
+from app.config.seguridad import hash_password
+from app.config.sesion import Sesion, requiere_rol
+from app.entidades.enums import Rol
 from app.main import app
-from app.modelos import AuditoriaSistema, Cliente, Tienda, Usuario
-from app.modelos.tipos import BAJA
+from app.entidades.acceso import AuditoriaSistema, Tienda, Usuario
+from app.entidades.catalogo import Cliente
+from app.entidades.tipos import BAJA
 
 CLAVE = "clave-de-prueba"
 
