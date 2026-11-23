@@ -20,10 +20,12 @@ from fastapi.responses import JSONResponse
 import app.entidades.todas  # noqa: F401  (carga las 13 tablas antes de la primera consulta)
 from app.config.configuracion import get_settings
 from app.controladores.acceso import router as acceso_router
+from app.controladores.ventas import router as ventas_router
 from app.excepciones.errores import ErrorNegocio
 
 app = FastAPI(title="Fiao API", version="0.1.0")
 app.include_router(acceso_router)
+app.include_router(ventas_router)
 
 # Permite que el frontend (Angular) llame a esta API desde el navegador.
 app.add_middleware(
