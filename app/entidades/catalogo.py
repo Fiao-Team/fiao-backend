@@ -10,10 +10,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db import Base
-from app.dominio.enums import CapitalizacionDias, FormaVentaProducto, Moneda, PeriodoDias, TipoTasa
-from app.modelos.acceso import Tienda, Usuario
-from app.modelos.tipos import ACTIVO, MONTO, TASA, enum_pg
+from app.config.db import Base
+from app.entidades.enums import CapitalizacionDias, FormaVentaProducto, Moneda, PeriodoDias, TipoTasa
+from app.entidades.acceso import Tienda, Usuario
+from app.entidades.tipos import ACTIVO, MONTO, TASA, enum_pg
 
 
 class Cliente(Base):

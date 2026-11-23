@@ -3,7 +3,7 @@ las operaciones en la tabla auditoria_sistema."""
 
 from sqlalchemy.orm import Session
 
-from app.modelos import AuditoriaSistema
+from app.entidades.acceso import AuditoriaSistema
 
 
 def registrar_auditoria(

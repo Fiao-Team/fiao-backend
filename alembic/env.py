@@ -14,9 +14,9 @@ from logging.config import fileConfig
 from sqlalchemy import create_engine, pool
 
 from alembic import context
-from app.config import get_settings
-from app.db import Base
-import app.modelos  # noqa: F401  (registra las 13 tablas en Base.metadata)
+from app.config.configuracion import get_settings
+from app.config.db import Base
+import app.entidades.todas  # noqa: F401  (registra las 13 tablas en Base.metadata)
 
 config = context.config
 if config.config_file_name is not None:

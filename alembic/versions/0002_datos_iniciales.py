@@ -16,8 +16,8 @@ from collections.abc import Sequence
 import sqlalchemy as sa
 from alembic import op
 
-from app.comun.seguridad import hash_password
-from app.config import get_settings
+from app.config.seguridad import hash_password
+from app.config.configuracion import get_settings
 
 revision: str = "0002"
 down_revision: str | None = "0001"

@@ -18,7 +18,7 @@ from app.calculo.compras import compra_fin_de_mes, generar_cronograma
 from app.calculo.fechas import dias_entre
 from app.calculo.redondeo import a_porcentaje
 from app.calculo.tasas import normalizar_tea, tep
-from app.dominio.enums import PeriodoDias, TipoTasa
+from app.entidades.enums import PeriodoDias, TipoTasa
 
 TEA = normalizar_tea(TipoTasa.EFECTIVA, D("30"), PeriodoDias.ANUAL)
 TEA_MORA = normalizar_tea(TipoTasa.EFECTIVA, D("5"), PeriodoDias.ANUAL)

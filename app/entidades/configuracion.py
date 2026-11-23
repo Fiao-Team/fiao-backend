@@ -6,9 +6,9 @@ from decimal import Decimal
 from sqlalchemy import BigInteger, ForeignKey, SmallInteger, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base
-from app.dominio.enums import Moneda
-from app.modelos.tipos import TASA, enum_pg
+from app.config.db import Base
+from app.entidades.enums import Moneda
+from app.entidades.tipos import TASA, enum_pg
 
 
 class ParametrosSistema(Base):
