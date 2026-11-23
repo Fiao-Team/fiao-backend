@@ -111,6 +111,34 @@ Esto crea las 13 tablas, los parámetros del sistema, las tasas máximas del BCR
 
 ---
 
+## 6.1. Cargar datos de prueba (opcional, solo desarrollo)
+
+Mientras no existan las pantallas de tiendas, clientes y productos, este script crea
+**Bodega Don Pepe**, su dueño y los clientes de los Juegos 1, 2 y 3 con productos de los mockups.
+Primero agrega a tu `.env` la línea `DEMO_PASSWORD=...` (mínimo 8 caracteres).
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.datos_demo
+```
+
+| Usuario | Rol | Datos |
+|---|---|---|
+| `donpepe` | Administrador del negocio | Bodega Don Pepe |
+| `rosa` | Cliente | Juego 1: soles, 30 % efectiva anual, límite 500 |
+| `carlos` | Cliente | Juego 2: soles, 30 % nominal anual cap. mensual, límite 700 |
+| `luis` | Cliente | Juego 3: dólares, 2 % efectiva mensual, límite 300 |
+
+Todos usan la contraseña de `DEMO_PASSWORD`. Si lo corres otra vez, no duplica nada.
+
+Para reproducir los juegos del informe, fija la **fecha simulada** del sistema:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.datos_demo --fecha-simulada 2026-09-15
+.\.venv\Scripts\python.exe -m scripts.datos_demo --sin-fecha-simulada
+```
+
+---
+
 ## 7. Correr las pruebas
 
 | Comando | Qué prueba | ¿Necesita PostgreSQL? |
@@ -142,6 +170,7 @@ app/
   config/          configuración (.env), base de datos, seguridad, sesión y auditoría
   calculo/         cálculo financiero puro (tasas, fin de mes, método francés, mora)
 alembic/versions/  migraciones: scripts que crean y cambian la base
+scripts/           datos_demo.py: datos de prueba para el navegador (solo desarrollo)
 tests/
   calculo/         pruebas del cálculo (sin base de datos)
   api/             pruebas de las rutas (con base fiao_test)
