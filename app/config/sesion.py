@@ -12,11 +12,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
-from app.comun.seguridad import leer_token
-from app.db import get_db
-from app.dominio.enums import Rol
-from app.modelos import Usuario
-from app.modelos.tipos import BAJA
+from app.config.seguridad import leer_token
+from app.config.db import get_db
+from app.entidades.enums import Rol
+from app.entidades.acceso import Usuario
+from app.entidades.tipos import BAJA
 
 _bearer = HTTPBearer(auto_error=False)
 

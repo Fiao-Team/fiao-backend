@@ -7,10 +7,10 @@ from sqlalchemy import text
 from sqlalchemy import BigInteger, ForeignKey, Integer, Numeric, SmallInteger, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db import Base
-from app.dominio.enums import EstadoCuota, EstadoTransaccion, ModalidadPago
-from app.modelos.catalogo import Cliente, Producto
-from app.modelos.tipos import MONTO, TASA, enum_pg
+from app.config.db import Base
+from app.entidades.enums import EstadoCuota, EstadoTransaccion, ModalidadPago
+from app.entidades.catalogo import Cliente, Producto
+from app.entidades.tipos import MONTO, TASA, enum_pg
 
 
 class Transaccion(Base):

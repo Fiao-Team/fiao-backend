@@ -12,9 +12,9 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 
-import app.modelos  # noqa: F401  (registra las tablas)
-from app.config import get_settings
-from app.db import Base, get_db
+import app.entidades.todas  # noqa: F401  (registra las tablas)
+from app.config.configuracion import get_settings
+from app.config.db import Base, get_db
 from app.main import app
 
 URL = make_url(get_settings().database_url)

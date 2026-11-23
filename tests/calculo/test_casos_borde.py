@@ -10,7 +10,7 @@ from app.calculo.cobro import estado_listado
 from app.calculo.compras import generar_cronograma
 from app.calculo.fechas import dias_entre, fecha_con_dia, sumar_meses
 from app.calculo.tasas import normalizar_tea
-from app.dominio.enums import CapitalizacionDias, EstadoListado, PeriodoDias, TipoTasa
+from app.entidades.enums import CapitalizacionDias, EstadoListado, PeriodoDias, TipoTasa
 
 
 # --- Días calendario reales (tabla del capítulo 4) ---

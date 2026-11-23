@@ -10,7 +10,7 @@ from datetime import UTC, datetime, timedelta
 import bcrypt
 import jwt
 
-from app.config import get_settings
+from app.config.configuracion import get_settings
 
 _ALGORITMO = "HS256"
 

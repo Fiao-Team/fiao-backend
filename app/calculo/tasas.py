@@ -8,7 +8,7 @@ a 9 decimales.
 from decimal import Decimal
 
 from app.calculo.redondeo import dividir, potencia, red_tasa
-from app.dominio.enums import CapitalizacionDias, PeriodoDias, TipoTasa
+from app.entidades.enums import CapitalizacionDias, PeriodoDias, TipoTasa
 
 UNO = Decimal(1)
 CIEN = Decimal(100)
