@@ -141,3 +141,43 @@ def test_candado_por_rol(client, datos):
 
     assert client.get("/_prueba/solo-negocio", headers=token(client, "rosa_t")).status_code == 403
     assert client.get("/_prueba/solo-negocio", headers=token(client, "admin_t")).status_code == 403
+
+
+# --- Cambiar contraseña ---
+
+def cambiar(client, cabecera, actual, nueva):
+    return client.post(
+        "/auth/cambiar-contrasena",
+        json={"password_actual": actual, "password_nueva": nueva},
+        headers=cabecera,
+    )
+
+
+def test_cambiar_contrasena_correcto(client, db, datos):
+    r = cambiar(client, token(client, "rosa_t"), CLAVE, "nueva-clave-123")
+    assert r.status_code == 204
+    assert login(client, "rosa_t", "nueva-clave-123").status_code == 200
+    assert login(client, "rosa_t", CLAVE).status_code == 401
+    registro = db.scalar(select(AuditoriaSistema).where(AuditoriaSistema.accion == "CAMBIO_CLAVE"))
+    assert registro.usuario_id == datos["u_rosa"].usuario_id
+
+
+def test_cambiar_contrasena_actual_incorrecta(client, datos):
+    r = cambiar(client, token(client, "donpepe_t"), "no-es-esta", "nueva-clave-123")
+    # 400 y no 401: el frontend no debe cerrar la sesión por esto
+    assert (r.status_code, r.json()["detail"]) == (400, "La contraseña actual no es correcta")
+
+
+def test_cambiar_contrasena_muy_corta(client, datos):
+    r = cambiar(client, token(client, "admin_t"), CLAVE, "1234567")
+    assert r.status_code == 400
+    assert "al menos 8" in r.json()["detail"]
+
+
+def test_cambiar_contrasena_igual_a_la_actual(client, datos):
+    r = cambiar(client, token(client, "admin_t"), CLAVE, CLAVE)
+    assert r.status_code == 400
+
+
+def test_cambiar_contrasena_sin_sesion(client, datos):
+    assert cambiar(client, {}, CLAVE, "nueva-clave-123").status_code == 401
