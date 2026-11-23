@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     # Contraseña del usuario "admin" que crea la migración 0002 (solo se usa una vez).
     admin_password_inicial: str | None = None
 
+    # Contraseña de los usuarios de prueba que crea scripts/datos_demo.py (solo desarrollo).
+    demo_password: str | None = None
+
     @property
     def lista_cors(self) -> list[str]:
         return [o.strip() for o in self.cors_origenes.split(",") if o.strip()]
