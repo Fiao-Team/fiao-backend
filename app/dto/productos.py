@@ -11,6 +11,7 @@ class ProductoResumenDTO(BaseModel):
 
     producto_id: int
     nombre: str
+    descripcion: str | None = None
     marca: str | None = None
     categoria: str | None = None
     proveedor: str | None = None

@@ -296,23 +296,32 @@ def test_aislamiento_entre_tiendas_y_baja_sin_deuda(client, db):
     assert client.get(f"/clientes/{cliente_id}", headers=h2).status_code == 404
     assert client.patch(f"/clientes/{cliente_id}/baja", headers=h2).status_code == 404
 
-    # Tienda 1 edita límite de crédito a 800.00
+    # Tienda 1 edita límite de crédito a 800.00 y correo
     edit_payload = _payload_cliente(
         dni="76661111",
         nombres_apellidos="María Elena Quispe Editada",
+        email="maria.editada@ej.pe",
         limite_credito="800.00",
     )
     del edit_payload["username"]
     del edit_payload["password"]
-    del edit_payload["email"]
     r_edit = client.put(f"/clientes/{cliente_id}", json=edit_payload, headers=h1)
     assert r_edit.status_code == 200
     assert Decimal(str(r_edit.json()["limite_credito"])) == Decimal("800.00")
+    assert r_edit.json()["email"] == "maria.editada@ej.pe"
+    assert r_edit.json()["situacion"] == "AL_DIA"
 
     # Tienda 1 da de baja al cliente (sin deuda)
     r_baja = client.patch(f"/clientes/{cliente_id}/baja", headers=h1)
     assert r_baja.status_code == 200
     assert r_baja.json()["estado"] == BAJA
+    assert r_baja.json()["situacion"] == "INACTIVO"
+
+    # Filtro situacion=INACTIVO devuelve al cliente dado de baja
+    r_inact = client.get("/clientes?situacion=INACTIVO", headers=h1)
+    assert r_inact.status_code == 200
+    assert len(r_inact.json()) == 1
+    assert r_inact.json()[0]["cliente_id"] == cliente_id
 
     # El cliente dado de baja ya no puede iniciar sesión (403 Cuenta inactiva)
     r_login = client.post(
@@ -325,3 +334,61 @@ def test_aislamiento_entre_tiendas_y_baja_sin_deuda(client, db):
     r_act = client.patch(f"/clientes/{cliente_id}/activar", headers=h1)
     assert r_act.status_code == 200
     assert r_act.json()["estado"] == ACTIVO
+
+
+def test_capitalizacion_mayor_al_periodo_y_estado_cuenta(client, db):
+    tienda = crear_tienda(db, "dueno_ec", "Bodega EC", "20202020207")
+    prods = crear_productos(db, tienda)
+    h = token(client, "dueno_ec")
+
+    # Capitalización ANUAL (360) > período MENSUAL (30) -> 400
+    bad_cap = _payload_cliente(
+        dni="77771111",
+        username="cli_bad_cap",
+        email="badcap@ej.pe",
+        tipo_tasa_comp="NOMINAL",
+        tasa_compensatoria="2",
+        periodo_tasa_comp="MENSUAL",
+        capitalizacion_comp="ANUAL",
+    )
+    r_bad = client.post("/clientes", json=bad_cap, headers=h)
+    assert r_bad.status_code == 400
+    assert "capitalizacion_comp" in r_bad.json()["errores"]
+
+    # Crear cliente válido y registrar una compra en 3 cuotas (Licuadora Oster S/ 210)
+    r_ok = client.post(
+        "/clientes",
+        json=_payload_cliente(dni="77772222", username="cli_ec", email="ec@ej.pe", limite_credito="500.00"),
+        headers=h,
+    )
+    assert r_ok.status_code == 201
+    cid = r_ok.json()["cliente_id"]
+
+    r_v = client.post(
+        "/ventas",
+        json={
+            "cliente_id": cid,
+            "items": [
+                {
+                    "producto_id": prods["licuadora"].producto_id,
+                    "cantidad": 1,
+                    "modalidad": "EN_MESES",
+                }
+            ],
+            "cuotas": 3,
+        },
+        headers=h,
+    )
+    assert r_v.status_code == 201
+
+    # Consultar GET /clientes/{id}/estado-cuenta
+    r_ec = client.get(f"/clientes/{cid}/estado-cuenta", headers=h)
+    assert r_ec.status_code == 200
+    ec = r_ec.json()
+    assert Decimal(str(ec["deuda_total"])) == Decimal("210.00")
+    assert Decimal(str(ec["disponible"])) == Decimal("290.00")
+    assert ec["situacion"] == "CON_DEUDA"
+    assert len(ec["movimientos"]) == 1
+    assert len(ec["cuotas"]) == 3
+    assert ec["pagos"] == []
+    assert ec["proximo_pago"] is not None

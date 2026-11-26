@@ -1,10 +1,18 @@
-"""Modelos Pydantic (DTOs) para la gestión de clientes y límites de crédito (Fig. 9 a 12)."""
+"""Modelos Pydantic (DTOs) para la gestión de clientes, límites de crédito y estado de cuenta (Fig. 9 a 12)."""
 
-from datetime import time
+from datetime import date, datetime, time
 from decimal import Decimal
 from pydantic import BaseModel, Field
 
-from app.entidades.enums import CapitalizacionDias, Moneda, PeriodoDias, TipoTasa
+from app.entidades.enums import (
+    CapitalizacionDias,
+    EstadoCuota,
+    EstadoTransaccion,
+    ModalidadPago,
+    Moneda,
+    PeriodoDias,
+    TipoTasa,
+)
 
 
 class ClienteResumenDTO(BaseModel):
@@ -41,6 +49,65 @@ class ClienteResumenDTO(BaseModel):
     tea_mora_porcentaje: Decimal
 
     estado: int
+    situacion: str  # AL_DIA | CON_DEUDA | EN_MORA | INACTIVO
+
+
+class MovimientoEstadoCuentaDTO(BaseModel):
+    """Pestaña Movimientos del modal 'Estado de cuenta'."""
+
+    transaccion_id: int
+    fecha_hora_compra: datetime
+    descripcion: str
+    modalidad_pago: ModalidadPago
+    num_cuotas: int | None = None
+    monto_capital: Decimal
+    monto_total: Decimal
+    fecha_vencimiento: date
+    estado: EstadoTransaccion
+
+
+class CuotaEstadoCuentaDTO(BaseModel):
+    """Pestaña Cuotas del modal 'Estado de cuenta'."""
+
+    plan_id: int
+    transaccion_id: int
+    numero_cuota: int
+    fecha_vencimiento: date
+    saldo_inicial: Decimal
+    interes_compensatorio: Decimal
+    amortizacion: Decimal
+    monto_cuota: Decimal
+    saldo_final: Decimal
+    estado_cuota: EstadoCuota
+
+
+class PagoEstadoCuentaDTO(BaseModel):
+    """Pestaña Pagos del modal 'Estado de cuenta'."""
+
+    pago_id: int
+    listado_id: int
+    fecha_pago_real: datetime
+    monto_pagado: Decimal
+    interes_moratorio_pagado: Decimal
+    interes_comp_pagado: Decimal
+    capital_pagado: Decimal
+
+
+class EstadoCuentaClienteDTO(BaseModel):
+    """Modal 'Estado de cuenta' del cliente (resumen + Movimientos, Cuotas y Pagos)."""
+
+    cliente_id: int
+    nombres_apellidos: str
+    dni: str
+    moneda: Moneda
+    deuda_total: Decimal
+    limite_credito: Decimal
+    disponible: Decimal
+    proximo_pago: date | None = None
+    situacion: str
+    movimientos: list[MovimientoEstadoCuentaDTO]
+    cuotas: list[CuotaEstadoCuentaDTO]
+    pagos: list[PagoEstadoCuentaDTO]
 
 
 class VistaPreviaTasasEntradaDTO(BaseModel):
@@ -109,6 +176,7 @@ class ActualizarClienteDTO(BaseModel):
     nombres_apellidos: str = Field(..., min_length=2, max_length=80)
     telefono: str = Field(..., description="Teléfono de 9 dígitos numéricos")
     direccion: str = Field(..., min_length=2, max_length=100)
+    email: str | None = Field(default=None, max_length=100)
 
     moneda: Moneda = Field(default=Moneda.PEN)
     limite_credito: Decimal
