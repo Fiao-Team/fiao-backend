@@ -12,9 +12,11 @@ class ErrorNegocio(Exception):
 
     estado:  código HTTP que recibirá el frontend (400, 401, 403, 404...).
     mensaje: texto que verá el usuario.
+    errores: mapa opcional {campo: mensaje} para mostrar errores junto a cada campo (Fig. 4).
     """
 
-    def __init__(self, estado: int, mensaje: str):
+    def __init__(self, estado: int, mensaje: str, errores: dict[str, str] | None = None):
         super().__init__(mensaje)
         self.estado = estado
         self.mensaje = mensaje
+        self.errores = errores
