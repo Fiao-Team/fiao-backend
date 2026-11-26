@@ -85,6 +85,7 @@ def cargar(fecha_simulada: date | None, quitar_fecha: bool) -> None:
         raise SystemExit("Falta DEMO_PASSWORD en el archivo .env (mínimo 8 caracteres).")
 
     with SessionLocal() as db:
+        # Tienda 1: Bodega Don Pepe
         dueno = _usuario(db, "donpepe", Rol.ADMIN_NEGOCIO, "José Ramírez", clave)
         tienda = db.scalar(select(Tienda).where(Tienda.admin_usuario_id == dueno.usuario_id))
         if tienda is None:
@@ -97,6 +98,48 @@ def cargar(fecha_simulada: date | None, quitar_fecha: bool) -> None:
             db.add(tienda)
             db.flush()
             print("  + tienda Bodega Don Pepe")
+
+        # Tienda 2: Panadería San José (del informe TB1 Fig. 2)
+        dueno_panaderia = _usuario(db, "sanjose_admin", Rol.ADMIN_NEGOCIO, "José Manuel Sánchez", clave)
+        tienda_panaderia = db.scalar(select(Tienda).where(Tienda.admin_usuario_id == dueno_panaderia.usuario_id))
+        if tienda_panaderia is None:
+            tienda_panaderia = Tienda(
+                admin_usuario_id=dueno_panaderia.usuario_id, nombre_comercial="Panadería San José",
+                razon_social="Panadería San José S.A.C.", ruc="20456789012", giro="Panadería",
+                direccion="Jr. Las Flores 310", distrito="San Juan de Lurigancho", telefono="984567890",
+                dueno_dni="41234567",
+            )
+            db.add(tienda_panaderia)
+            db.flush()
+            print("  + tienda Panadería San José")
+
+        # Tienda 3: Minimarket La Esquina (del informe TB1 Fig. 2)
+        dueno_minimarket = _usuario(db, "laesquina_admin", Rol.ADMIN_NEGOCIO, "Carlos Morales", clave)
+        tienda_minimarket = db.scalar(select(Tienda).where(Tienda.admin_usuario_id == dueno_minimarket.usuario_id))
+        if tienda_minimarket is None:
+            tienda_minimarket = Tienda(
+                admin_usuario_id=dueno_minimarket.usuario_id, nombre_comercial="Minimarket La Esquina",
+                razon_social="Minimarket La Esquina E.I.R.L.", ruc="20789012345", giro="Abarrotes",
+                direccion="Av. Universitaria 1420", distrito="San Miguel", telefono="991234567",
+                dueno_dni="42345678",
+            )
+            db.add(tienda_minimarket)
+            db.flush()
+            print("  + tienda Minimarket La Esquina")
+
+        # Tienda 4: Peluquería Glamour (del informe TB1 Fig. 2)
+        dueno_peluqueria = _usuario(db, "glamour_admin", Rol.ADMIN_NEGOCIO, "Ana Luisa Torres", clave)
+        tienda_peluqueria = db.scalar(select(Tienda).where(Tienda.admin_usuario_id == dueno_peluqueria.usuario_id))
+        if tienda_peluqueria is None:
+            tienda_peluqueria = Tienda(
+                admin_usuario_id=dueno_peluqueria.usuario_id, nombre_comercial="Peluquería Glamour",
+                razon_social="Peluquería Glamour S.R.L.", ruc="20901234567", giro="Belleza",
+                direccion="Av. Larco 850", distrito="Miraflores", telefono="998765432",
+                dueno_dni="43456789",
+            )
+            db.add(tienda_peluqueria)
+            db.flush()
+            print("  + tienda Peluquería Glamour")
 
         _cliente(db, tienda, "rosa", clave, "72819436", "Rosa Díaz", limite_credito=D("500.00"))
         _cliente(db, tienda, "carlos", clave, "41928653", "Carlos Mendoza", limite_credito=D("700.00"),
